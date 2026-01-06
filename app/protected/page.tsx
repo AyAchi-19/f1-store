@@ -9,6 +9,7 @@ import { redirect } from "next/navigation"
 import { PasswordUpdateForm } from "@/components/password-update-form"
 import { ProfileUpdateForm } from "@/components/profile-update-form"
 import { UserOrdersList } from "@/components/user-orders-list"
+import { signOut } from "@/app/auth/actions"
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -74,7 +75,7 @@ export default async function ProfilePage() {
                 </nav>
               </div>
 
-              <form action="/auth/sign-out" method="post">
+              <form action={signOut}>
                 <Button
                   variant="outline"
                   className="w-full border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent"

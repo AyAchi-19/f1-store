@@ -2,7 +2,7 @@
 
 import type React from "react"
 import Link from "next/link"
-import { ShoppingBag, User, Trophy, LayoutDashboard, Flag, Shirt, Watch, Share2, Instagram, Twitter, Facebook } from "lucide-react"
+import { ShoppingBag, User, Trophy, LayoutDashboard, Flag, Shirt, Watch, Share2, Instagram, Twitter, Facebook, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/components/cart-provider"
@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
+import { signOut } from "@/app/auth/actions"
 
 export function StoreLayout({ children, user: initialUser }: { children: React.ReactNode; user: any }) {
   const { items, totalItems, totalPrice, removeItem } = useCart()
@@ -198,11 +199,59 @@ export function StoreLayout({ children, user: initialUser }: { children: React.R
               </SheetContent>
             </Sheet>
 
-            <Button asChild variant="ghost" size="icon" className="group hidden sm:flex hover:bg-violet-50 rounded-xl w-10 h-10 text-slate-600 hover:text-violet-600">
-              <Link href={initialUser ? "/protected" : "/auth/login"}>
-                <User className="h-5 w-5" />
-              </Link>
-            </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="group hidden sm:flex hover:bg-violet-50 rounded-xl w-10 h-10 text-slate-600 hover:text-violet-600">
+                  <User className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[300px] flex flex-col border-l border-slate-100 shadow-2xl">
+                <SheetHeader className="pb-6 border-b border-slate-100">
+                  <SheetTitle className="text-xl font-black uppercase italic tracking-tighter flex items-center gap-2 text-slate-900">
+                    User Account
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-2 py-6">
+                  {initialUser ? (
+                    <>
+                      <div className="px-2 py-4 border-b border-slate-50 mb-4">
+                        <p className="font-bold text-slate-900 truncate">{initialUser.email}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                          {profile?.role === "admin" ? "Team Principal" : "Paddock Member"}
+                        </p>
+                      </div>
+                      <Button asChild variant="ghost" className="justify-start font-bold uppercase italic text-xs h-12">
+                        <Link href="/protected">
+                          <User className="mr-2 h-4 w-4" /> My Profile
+                        </Link>
+                      </Button>
+                      {profile?.role === "admin" && (
+                        <Button asChild variant="ghost" className="justify-start font-bold uppercase italic text-xs h-12">
+                          <Link href="/admin">
+                            <LayoutDashboard className="mr-2 h-4 w-4" /> Admin Panel
+                          </Link>
+                        </Button>
+                      )}
+                      <Separator className="my-2" />
+                      <form action={signOut}>
+                        <Button variant="ghost" className="w-full justify-start font-bold uppercase italic text-xs h-12 text-red-500 hover:text-red-600 hover:bg-red-50">
+                          <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                        </Button>
+                      </form>
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Button asChild className="bg-violet-600 hover:bg-violet-700 font-bold uppercase italic text-xs h-12">
+                        <Link href="/auth/login">Login</Link>
+                      </Button>
+                      <Button asChild variant="outline" className="font-bold uppercase italic text-xs h-12">
+                        <Link href="/auth/sign-up">Create Account</Link>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
